@@ -8,6 +8,8 @@ import { AppService } from './app.service';
 import { DatabaseModule } from './database/database.module';
 import { UtilModule } from './util/util.module';
 import { AuthModule } from './auth/auth.module';
+import { MenuModule } from './menu/menu.module';
+import { MenuCategoryModule } from './menu-category/menu-category.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { AuthModule } from './auth/auth.module';
     DatabaseModule,
     UtilModule,
     AuthModule,
+    MenuModule,
+    MenuCategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
