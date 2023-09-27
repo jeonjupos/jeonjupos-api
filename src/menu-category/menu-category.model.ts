@@ -16,7 +16,7 @@ export class MenuCategoryModel {
   ) {
     try {
       this.sql = `
-        select categorypkey, categoryname from category where storepkey=? and useyn=true;
+        select categorypkey, categoryname from category where storepkey=? and useyn=true order by sort;
       `;
       this.params = [getCategoryListDto.storepkey];
       return await this.databaseService.dbQuery(
