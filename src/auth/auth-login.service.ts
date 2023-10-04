@@ -3,7 +3,7 @@ import { LoginDto } from './dto/login.dto';
 import { DatabaseService } from '../database/database.service';
 import { PoolConnection } from 'mysql2/promise';
 import { AuthModel } from './auth.model';
-import { PasswordBcryptUtil } from '../util/password-bcrypt.util';
+import { PasswordBcryptUtil } from '../util/password/password-bcrypt.util';
 
 @Injectable()
 export class AuthLoginService {

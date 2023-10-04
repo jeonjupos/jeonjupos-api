@@ -10,6 +10,7 @@ import { UtilModule } from './util/util.module';
 import { AuthModule } from './auth/auth.module';
 import { MenuModule } from './menu/menu.module';
 import { MenuCategoryModule } from './menu-category/menu-category.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { MenuCategoryModule } from './menu-category/menu-category.module';
     AuthModule,
     MenuModule,
     MenuCategoryModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

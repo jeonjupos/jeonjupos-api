@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards, Response, Query } from '@nestjs/common';
-import { ResponseUtil } from '../util/response.util';
-import { JwtAuthGuard } from '../util/jwt-auth.guard';
+import { ResponseUtil } from '../util/response/response.util';
+import { JwtAuthGuard } from '../util/jwt/jwt-auth.guard';
 import { GetCategoryListDto } from './dto/menu-category.dto';
 import { MenuCategoryService } from './menu-category.service';
 

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { jwtConstants } from '../auth/constants';
+import { jwtConstants } from '../../auth/constants';
 
 /**
  * token 검증

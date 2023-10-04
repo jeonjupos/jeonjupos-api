@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { jwtConstants } from '../auth/constants';
-import { DatabaseService } from '../database/database.service';
+import { jwtConstants } from '../../auth/constants';
+import { DatabaseService } from '../../database/database.service';
 import { PoolConnection } from 'mysql2/promise';
 
 @Injectable()

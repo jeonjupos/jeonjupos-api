@@ -1,8 +1,8 @@
 import { Controller, Post, Body, Response } from '@nestjs/common';
-import { ResponseUtil } from '../util/response.util';
+import { ResponseUtil } from '../util/response/response.util';
 import { LoginDto } from './dto/login.dto';
 import { AuthLoginService } from './auth-login.service';
-import { JwtSignUtil } from '../util/jwt-sign.util';
+import { JwtSignUtil } from '../util/jwt/jwt-sign.util';
 
 @Controller('auth')
 export class AuthController {
