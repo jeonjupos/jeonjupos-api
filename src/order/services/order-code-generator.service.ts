@@ -1,33 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../database/database.service';
 import { PoolConnection } from 'mysql2/promise';
 import { OrderModel } from '../order.model';
 
+// 주문번호 조회 및 변경
 @Injectable()
 export class OrderCodeGeneratorService {
-  private connection: PoolConnection;
-  constructor(
-    private databaseService: DatabaseService,
-    private orderModel: OrderModel,
-  ) {}
+  constructor(private orderModel: OrderModel) {}
 
-  async orderCodeGenerator(storepkey: number) {
+  async orderCodeGenerator(connection: PoolConnection, storepkey: number) {
     try {
-      this.connection = await this.databaseService.getDBConnection();
       // 주문번호 조회
       const ordercode = await this.orderModel.getOrderCode(
-        this.connection,
+        connection,
         storepkey,
       );
       if (ordercode.length === 0) {
         // 주문번호 설정 안된경우 default로 생성함
-        await this.orderModel.createOrderCode(this.connection, storepkey);
+        await this.orderModel.createOrderCode(connection, storepkey);
         return 1;
       } else {
         if (ordercode[0].code >= ordercode[0].codemax) {
           // 주문번호 최소 변경
           await this.orderModel.modifyOrderCode(
-            this.connection,
+            connection,
             storepkey,
             ordercode[0].codemin,
           );
@@ -35,7 +30,7 @@ export class OrderCodeGeneratorService {
         } else {
           // 주문번호 + 1 업데이트
           await this.orderModel.modifyOrderCode(
-            this.connection,
+            connection,
             storepkey,
             ordercode[0].code + 1,
           );
@@ -44,8 +39,6 @@ export class OrderCodeGeneratorService {
       }
     } catch (err) {
       throw err;
-    } finally {
-      this.connection.release();
     }
   }
 }

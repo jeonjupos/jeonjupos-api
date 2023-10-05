@@ -3,6 +3,7 @@ import {
   IsArray,
   IsBoolean,
   IsDateString,
+  IsIn,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -26,48 +27,12 @@ export class OrderMenuDto {
 }
 
 /**
- * 첫 주문
- */
-export class FirstOrderDto {
-  @IsNotEmpty()
-  @IsNumber()
-  spacepkey: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  storepkey: number;
-
-  @IsNotEmpty()
-  @IsBoolean()
-  deliveryyn: boolean;
-
-  @IsOptional()
-  @IsString()
-  deliveryaddress: string;
-
-  @IsNotEmpty()
-  @IsBoolean()
-  reserveyn: boolean;
-
-  @IsOptional()
-  @IsDateString()
-  reservedate: string;
-
-  @IsNotEmpty()
-  @IsArray()
-  @ArrayNotEmpty()
-  @ValidateNested({ each: true })
-  @Type(() => OrderMenuDto)
-  orderList: OrderMenuDto[];
-}
-
-/**
- * 재주문
+ * 주문
  */
 export class OrderDto {
   @IsNotEmpty()
   @IsNumber()
-  orderinfopkey: number;
+  orderinfopkey: number; // 첫 주문시 0, 재주문시 orderinfopkey
 
   @IsNotEmpty()
   @IsNumber()
@@ -77,16 +42,18 @@ export class OrderDto {
   @IsNumber()
   storepkey: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsBoolean()
+  @IsIn([true, false])
   deliveryyn: boolean;
 
   @IsOptional()
   @IsString()
   deliveryaddress: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsBoolean()
+  @IsIn([true, false])
   reserveyn: boolean;
 
   @IsOptional()
