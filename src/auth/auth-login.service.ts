@@ -19,9 +19,13 @@ export class AuthLoginService {
    * 점주 조회 및 비밀번호 일치여부 체크
    * @param loginDto
    */
-  async login(
-    loginDto: LoginDto,
-  ): Promise<{ ownerpkey: number; ownerid: string; ownerpassword: string }> {
+  async login(loginDto: LoginDto): Promise<{
+    ownerpkey: number;
+    ownerid: string;
+    ownerpassword: string;
+    storename: string;
+    storepkey: number;
+  }> {
     try {
       this.connection = await this.databaseService.getDBConnection();
 

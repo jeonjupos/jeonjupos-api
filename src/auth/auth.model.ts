@@ -12,7 +12,11 @@ export class AuthModel {
 
   async getOwnerOne(connection: PoolConnection, loginDto: LoginDto) {
     try {
-      this.sql = `select ownerpkey, ownerid, ownerpassword from owner where ownerid=?`;
+      this.sql = `
+        select owner.ownerpkey, ownerid, ownerpassword, storename, storepkey
+        from owner 
+        join store on owner.ownerpkey=store.ownerpkey
+        where ownerid=?`;
       this.params = [loginDto.ownerid];
       return await this.databaseService.dbQuery(
         connection,

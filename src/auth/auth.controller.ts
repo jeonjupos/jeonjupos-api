@@ -21,13 +21,21 @@ export class AuthController {
         // 토큰 발급
         const token = await this.jwtSignUtil.sign(owner, owner.ownerpkey);
         return this.responseUtil.response(res, 200, '0000', '', {
-          owner: { ownerpkey: owner.ownerpkey, ownerid: owner.ownerid },
+          owner: {
+            ownerpkey: owner.ownerpkey,
+            ownerid: owner.ownerid,
+          },
+          store: {
+            storename: owner.storename,
+            storepkey: owner.storepkey,
+          },
           token: token,
         });
       } else {
         return this.responseUtil.response(res, 200, '0001', '', {});
       }
     } catch (err) {
+      console.log(err);
       if (err.name === 'UnauthorizedException') {
         return this.responseUtil.response(res, err.status, '8995', '', {});
       }
