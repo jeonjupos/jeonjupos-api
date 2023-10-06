@@ -8,6 +8,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -32,14 +33,17 @@ export class OrderMenuDto {
 export class OrderDto {
   @IsNotEmpty()
   @IsNumber()
+  @Min(0)
   orderinfopkey: number; // 첫 주문시 0, 재주문시 orderinfopkey
 
   @IsNotEmpty()
   @IsNumber()
+  @Min(1)
   spacepkey: number;
 
   @IsNotEmpty()
   @IsNumber()
+  @Min(1)
   storepkey: number;
 
   @IsOptional()

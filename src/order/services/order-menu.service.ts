@@ -9,6 +9,7 @@ export class OrderMenuService {
 
   /**
    * 주문메뉴 조회
+   * 재고 수량 변경
    * @param connection
    * @param ordernumticketpkey
    * @param orderList
@@ -25,19 +26,24 @@ export class OrderMenuService {
       for (const orderMenu of orderList) {
         const menu = await this.orderModel.getMenu(connection, orderMenu);
         if (menu.length === 1) {
-          // 메뉴 재고 수정
-          await this.orderModel.modifyMenuStock(
-            connection,
-            menu[0].menupkey,
-            orderMenu.cancelyn === true ? -orderMenu.count : +orderMenu.count,
-          );
           if (orderMenu.cancelyn === true) {
             // 취소
             orderPrice = orderPrice - menu[0].saleprice * orderMenu.count;
           } else {
             // 주문
+            if (menu[0].stock === 0 || orderMenu.count > menu[0].stock) {
+              const err = new Error(`${menu[0].menuname} 재고가 부족합니다.`);
+              err.name = 'STOCK_ERR';
+              throw err;
+            }
             orderPrice += menu[0].saleprice * orderMenu.count;
           }
+          // 메뉴 재고 수정
+          await this.orderModel.modifyMenuStock(
+            connection,
+            menu[0].menupkey,
+            orderMenu.cancelyn === true ? +orderMenu.count : -orderMenu.count,
+          );
           orderMenuList.push([
             menu[0].menupkey,
             ordernumticketpkey,
@@ -56,6 +62,11 @@ export class OrderMenuService {
             0,
             orderMenu.cancelyn,
           ]);
+        } else {
+          // 메뉴를 찾을 수 없음
+          const err = new Error(`메뉴를 찾을 수 없습니다.`);
+          err.name = 'MENU_NOT_FOUND';
+          throw err;
         }
       }
 

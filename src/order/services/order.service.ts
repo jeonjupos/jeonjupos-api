@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { OrderModel } from '../order.model';
 import { PoolConnection } from 'mysql2/promise';
-import { OrderDto, OrderMenuDto } from '../dto/order.dto';
+import { OrderDto } from '../dto/order.dto';
 import { OrderCodeGeneratorService } from './order-code-generator.service';
 import { OrderMenuService } from './order-menu.service';
 
@@ -17,17 +17,33 @@ export class OrderService {
   ) {}
 
   /**
-   * 테이블 조회
+   * 테이블 유효성 체크를 위한 조회
+   * @param spacepkey
+   */
+  async getSpaceValid(spacepkey: number) {
+    try {
+      this.connection = await this.databaseService.getDBConnection();
+      return await this.orderModel.getSpace(this.connection, spacepkey);
+    } catch (err) {
+      throw err;
+    } finally {
+      this.connection.release();
+    }
+  }
+
+  /**
+   * 테이블 식사중으로 변경
    * @param connection
    * @param spacepkey
    */
-  async getSpace(connection: PoolConnection, spacepkey: number) {
+  async modifySpace(
+    connection: PoolConnection,
+    spacepkey: number,
+  ): Promise<boolean> {
     try {
-      // 테이블 조회
-      const space = await this.orderModel.getSpace(connection, spacepkey);
       // 테이블 식사중으로 변경
       await this.orderModel.modifySpaceEating(connection, spacepkey);
-      return space[0];
+      return true;
     } catch (err) {
       throw err;
     }
@@ -35,6 +51,13 @@ export class OrderService {
 
   /**
    * 주문메뉴 생성
+   * 1. 테이블 식사중으로 변경
+   * 2. 주문서 생성(첫주문시)
+   * 3. 주문번호 조회
+   * 4. 번호표 생성
+   * 5. 주문메뉴 조회
+   * 6. 주문메뉴 생성
+   * 7. 주문서 주문금액 변경
    * @param orderDto
    */
   async order(orderDto: OrderDto): Promise<number> {
@@ -42,8 +65,8 @@ export class OrderService {
       this.connection = await this.databaseService.getDBConnection();
       await this.connection.beginTransaction();
       if (orderDto.orderinfopkey === 0) {
-        // 테이블 조회 및 식사 중으로 변경
-        await this.getSpace(this.connection, orderDto.spacepkey);
+        // 테이블 식사 중으로 변경
+        await this.modifySpace(this.connection, orderDto.spacepkey);
         // 주문서 생성
         const orderInfo = await this.orderModel.createOrderInfo(
           this.connection,
@@ -83,6 +106,12 @@ export class OrderService {
       return orderDto.orderinfopkey;
     } catch (err) {
       if (err.name === 'DBError') {
+        await this.connection.rollback();
+      } else if (err.name === 'STOCK_ERR') {
+        // 재고 부족
+        await this.connection.rollback();
+      } else if (err.name === 'MENU_NOT_FOUND') {
+        // 메뉴를 찾을 수 없음
         await this.connection.rollback();
       }
       throw err;
