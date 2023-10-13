@@ -1,8 +1,7 @@
 // database.service.ts
 
 import { Injectable, OnModuleInit } from '@nestjs/common';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const mysql = require('mysql2/promise');
+import * as mysql from 'mysql2/promise';
 import { ConfigService } from '@nestjs/config';
 import { Configuration } from '../util/config/configuration.interface';
 import { Pool, PoolConnection } from 'mysql2/promise';

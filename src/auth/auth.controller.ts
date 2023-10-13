@@ -35,7 +35,6 @@ export class AuthController {
         return this.responseUtil.response(res, 200, '0001', '', {});
       }
     } catch (err) {
-      console.log(err);
       if (err.name === 'UnauthorizedException') {
         return this.responseUtil.response(res, err.status, '8995', '', {});
       }

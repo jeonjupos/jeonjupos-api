@@ -72,7 +72,7 @@ export class OrderService {
           this.connection,
           orderDto,
         );
-        orderDto.orderinfopkey = orderInfo.orderinfopkey;
+        orderDto.orderinfopkey = orderInfo.insertId;
       }
       // 주문번호 조회
       const ordercode = await this.orderCodeGeneratorService.orderCodeGenerator(

@@ -17,6 +17,7 @@ export class MenuModel {
     try {
       this.sql = `
         select
+            menupkey,
             menuname, originprice, discountyn, 
             discountrate, saleprice, stock, 
             takeoutyn, takeinyn, takeoutprice  

@@ -25,9 +25,9 @@ export class MenuController {
     @Query() getMenuListDto: GetMenuListDto,
   ) {
     try {
-      const menuList = await this.menuService.getMenuList(getMenuListDto);
+      const menulist = await this.menuService.getMenuList(getMenuListDto);
       return this.responseUtil.response(res, 200, '0000', '', {
-        menuList: menuList,
+        menulist: menulist,
       });
     } catch (err) {
       return this.responseUtil.response(res, 500, '9999', '', {});
