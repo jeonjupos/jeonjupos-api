@@ -12,6 +12,6 @@ export class PayDto {
 
   @IsNotEmpty()
   @IsNumber()
-  @Min(1)
+  @Min(0)
   payprice: number;
 }
