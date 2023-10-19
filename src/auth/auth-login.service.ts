@@ -40,7 +40,7 @@ export class AuthLoginService {
           owner[0].ownerpassword,
         );
         if (pwdValid === false) {
-          throw new UnauthorizedException();
+          throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
         }
 
         // 응답
