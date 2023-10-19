@@ -22,7 +22,7 @@ export class JwtAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('다시 로그인해주세요.');
     }
     try {
       const payload = await this.jwtService.verifyAsync(token, {
@@ -40,8 +40,9 @@ export class JwtAuthGuard implements CanActivate {
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
       request.user_id = payload.user_id;
+      request.token = token;
     } catch (err) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('다시 로그인해주세요.');
     }
     return true;
   }

@@ -52,4 +52,24 @@ export class AuthLoginService {
       this.connection.release();
     }
   }
+
+  /**
+   * 토큰으로 회원 조회
+   * @param token
+   */
+  async getOwner(token: string) {
+    try {
+      this.connection = await this.databaseService.getDBConnection();
+      const owner = await this.authModel.getOwnerToken(this.connection, token);
+      if (owner.length !== 1) {
+        return null;
+      } else {
+        return owner[0];
+      }
+    } catch (err) {
+      throw err;
+    } finally {
+      this.connection.release();
+    }
+  }
 }

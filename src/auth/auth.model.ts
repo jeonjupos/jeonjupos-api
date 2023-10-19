@@ -27,4 +27,28 @@ export class AuthModel {
       throw err;
     }
   }
+
+  /**
+   * 토큰으로 회원 조회
+   * @param connection
+   * @param token
+   */
+  async getOwnerToken(connection: PoolConnection, token: string) {
+    try {
+      this.sql = `
+        select owner.ownerpkey, ownerid, ownerpassword, storename, storepkey
+        from owner 
+        join store on owner.ownerpkey=store.ownerpkey
+        where token=?;
+      `;
+      this.params = [token];
+      return await this.databaseService.dbQuery(
+        connection,
+        this.sql,
+        this.params,
+      );
+    } catch (err) {
+      throw err;
+    }
+  }
 }
