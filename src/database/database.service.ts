@@ -14,7 +14,7 @@ export class DatabaseService implements OnModuleInit {
   async onModuleInit(): Promise<void> {
     const database =
       this.configService.get<Configuration['database']>('database');
-    console.log('4444444 : ', database);
+
     this.CP = mysql.createPool({
       host: database.host,
       user: database.user,

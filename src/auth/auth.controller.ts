@@ -48,7 +48,6 @@ export class AuthController {
         return this.responseUtil.response(res, 200, '0001', '', {});
       }
     } catch (err) {
-      console.log(err);
       if (err.name === 'UnauthorizedException') {
         return this.responseUtil.response(res, err.status, '8995', '', {});
       }
@@ -65,7 +64,7 @@ export class AuthController {
   @UseGuards(AuthGuard('auth-jwt'))
   async jwtLogin(@Response() res: Response, @Req() req: any) {
     try {
-      const [type, token] = req.headers.authorization.split(' ');
+      const token = req.headers.authorization.split(' ')[0];
       // 토큰으로 회원 조회
       const owner = await this.authLoginService.getOwner(token);
       if (owner === null) {
