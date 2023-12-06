@@ -10,6 +10,11 @@ export class AuthModel {
 
   constructor(private databaseService: DatabaseService) {}
 
+  /**
+   * 관리자 조회
+   * @param connection
+   * @param loginDto
+   */
   async getOwnerOne(connection: PoolConnection, loginDto: LoginDto) {
     try {
       this.sql = `

@@ -1,8 +1,8 @@
 import { Controller, Get, UseGuards, Response, Query } from '@nestjs/common';
 import { ResponseUtil } from '../util/response/response.util';
-import { JwtAuthGuard } from '../util/jwt/jwt-auth.guard';
 import { GetCategoryListDto } from './dto/menu-category.dto';
 import { MenuCategoryService } from './menu-category.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('menu-category')
 export class MenuCategoryController {
@@ -11,18 +11,22 @@ export class MenuCategoryController {
     private menuCategoryService: MenuCategoryService,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
+  /**
+   * 메뉴 카테고리 목록 조회
+   * @param res
+   * @param getCategoryListDto
+   */
+  @UseGuards(AuthGuard('auth-jwt'))
   @Get('/list')
   async menuCategoryList(
     @Response() res: Response,
     @Query() getCategoryListDto: GetCategoryListDto,
   ) {
     try {
-      const categorylist = await this.menuCategoryService.getCategoryList(
-        getCategoryListDto,
-      );
       return this.responseUtil.response(res, 200, '0000', '', {
-        categorylist: categorylist,
+        categorylist: await this.menuCategoryService.getCategoryList(
+          getCategoryListDto,
+        ),
       });
     } catch (err) {
       return this.responseUtil.response(res, 500, '9999', '', {});

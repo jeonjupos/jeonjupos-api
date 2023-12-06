@@ -10,6 +10,11 @@ export class MenuModel {
 
   constructor(private databaseService: DatabaseService) {}
 
+  /**
+   * 카테고리별 메뉴 목록 조회
+   * @param connection
+   * @param getMenuListDto
+   */
   async getMenuList(
     connection: PoolConnection,
     getMenuListDto: GetMenuListDto,

@@ -11,4 +11,8 @@ export interface Configuration {
     database: string;
     connectionLimit: number;
   };
+
+  jwt: {
+    secret: string;
+  };
 }

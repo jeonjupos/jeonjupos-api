@@ -13,14 +13,14 @@ export class MenuService {
     private menuModel: MenuModel,
   ) {}
 
+  /**
+   * 카테고리별 메뉴 목록 조회
+   * @param getMenuListDto
+   */
   async getMenuList(getMenuListDto: GetMenuListDto) {
     try {
       this.connection = await this.databaseService.getDBConnection();
-      const menuList = await this.menuModel.getMenuList(
-        this.connection,
-        getMenuListDto,
-      );
-      return menuList;
+      return await this.menuModel.getMenuList(this.connection, getMenuListDto);
     } catch (err) {
       throw err;
     } finally {

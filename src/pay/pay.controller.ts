@@ -1,7 +1,8 @@
-import { Body, Controller, Post, Response } from '@nestjs/common';
+import { Body, Controller, Post, Response, UseGuards } from '@nestjs/common';
 import { PayService } from './pay.service';
 import { ResponseUtil } from '../util/response/response.util';
 import { PayDto } from './dto/pay.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('pay')
 export class PayController {
@@ -10,7 +11,13 @@ export class PayController {
     private responseUtil: ResponseUtil,
   ) {}
 
+  /**
+   * 결제
+   * @param res
+   * @param payDto
+   */
   @Post('/')
+  @UseGuards(AuthGuard('auth-jwt'))
   async pay(@Response() res: Response, @Body() payDto: PayDto) {
     try {
       let payResult: { result: boolean; message: string };

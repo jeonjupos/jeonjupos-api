@@ -1,8 +1,8 @@
 import { Controller, UseGuards, Response, Body, Post } from '@nestjs/common';
 import { ResponseUtil } from '../util/response/response.util';
-import { JwtAuthGuard } from '../util/jwt/jwt-auth.guard';
 import { OrderService } from './services/order.service';
 import { OrderDto } from './dto/order.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('order')
 export class OrderController {
@@ -16,7 +16,7 @@ export class OrderController {
    * @param res
    * @param orderDto
    */
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('auth-jwt'))
   @Post('/')
   async order(@Response() res: Response, @Body() orderDto: OrderDto) {
     try {

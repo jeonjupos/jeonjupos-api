@@ -3,7 +3,7 @@ import { GetTablesDto } from './dto/get-tables.dto';
 import { ResponseUtil } from '../util/response/response.util';
 import { TablesService } from './tables.service';
 import { GetTableDto } from './dto/get-table.dto';
-import { JwtAuthGuard } from '../util/jwt/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('table')
 export class TablesController {
@@ -17,8 +17,8 @@ export class TablesController {
    * @param getTablesDto
    * @param res
    */
-  @UseGuards(JwtAuthGuard)
   @Get('/list')
+  @UseGuards(AuthGuard('auth-jwt'))
   async getTableList(
     @Query() getTablesDto: GetTablesDto,
     @Response() res: Response,
@@ -38,8 +38,8 @@ export class TablesController {
    * @param getTableDto
    * @param res
    */
-  @UseGuards(JwtAuthGuard)
   @Get('')
+  @UseGuards(AuthGuard('auth-jwt'))
   async getTable(@Query() getTableDto: GetTableDto, @Response() res: Response) {
     try {
       const tableorder = await this.tablesService.getTable(getTableDto);

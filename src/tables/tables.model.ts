@@ -10,6 +10,11 @@ export class TablesModel {
   private params: any[];
   constructor(private databaseService: DatabaseService) {}
 
+  /**
+   * 테이블 목록 조회
+   * @param connection
+   * @param getTablesDto
+   */
   async getTableList(connection: PoolConnection, getTablesDto: GetTablesDto) {
     try {
       this.sql = `
@@ -87,6 +92,11 @@ export class TablesModel {
     }
   }
 
+  /**
+   * 결제후 남은 금액 조회
+   * @param connection
+   * @param orderinfopkey
+   */
   async getPayInfo(connection: PoolConnection, orderinfopkey: number) {
     try {
       this.sql = `
@@ -107,6 +117,11 @@ export class TablesModel {
     }
   }
 
+  /**
+   * 주문 메뉴 목록 조회
+   * @param connection
+   * @param orderinfopkey
+   */
   async getOrderMenuList(connection: PoolConnection, orderinfopkey: number) {
     try {
       this.sql = `

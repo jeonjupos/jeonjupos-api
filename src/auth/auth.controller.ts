@@ -10,7 +10,7 @@ import { ResponseUtil } from '../util/response/response.util';
 import { LoginDto } from './dto/login.dto';
 import { AuthLoginService } from './auth-login.service';
 import { JwtSignUtil } from '../util/jwt/jwt-sign.util';
-import { JwtAuthGuard } from '../util/jwt/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -20,6 +20,11 @@ export class AuthController {
     private jwtSignUtil: JwtSignUtil,
   ) {}
 
+  /**
+   * 로그인
+   * @param res
+   * @param loginDto
+   */
   @Post('/login')
   async login(@Response() res: Response, @Body() loginDto: LoginDto) {
     try {
@@ -50,8 +55,13 @@ export class AuthController {
     }
   }
 
+  /**
+   * jwt 로그인
+   * @param res
+   * @param req
+   */
   @Post('/jwt/login')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('auth-jwt'))
   async jwtLogin(@Response() res: Response, @Request() req: Request) {
     try {
       const token = req['token'];

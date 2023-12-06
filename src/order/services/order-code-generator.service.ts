@@ -7,6 +7,11 @@ import { OrderModel } from '../order.model';
 export class OrderCodeGeneratorService {
   constructor(private orderModel: OrderModel) {}
 
+  /**
+   * 주문번호 생성
+   * @param connection
+   * @param storepkey
+   */
   async orderCodeGenerator(connection: PoolConnection, storepkey: number) {
     try {
       // 주문번호 조회

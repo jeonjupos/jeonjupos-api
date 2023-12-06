@@ -13,8 +13,8 @@ export class PasswordBcryptUtil {
 
   /**
    * 비밀번호 검증
-   * @param plainPwd
-   * @param bcryptPwd
+   * @param plainPwd : string 평문
+   * @param bcryptPwd : string 암호화된 문자열
    */
   async pwValid(plainPwd: string, bcryptPwd: string): Promise<boolean> {
     return await bcrypt.compare(plainPwd, bcryptPwd);

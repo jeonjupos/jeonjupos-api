@@ -13,6 +13,10 @@ export class TablesService {
     private tablesModel: TablesModel,
   ) {}
 
+  /**
+   * 테이블 목록 조회
+   * @param getTablesDto
+   */
   async getTableList(getTablesDto: GetTablesDto) {
     try {
       this.connection = await this.databaseService.getDBConnection();
@@ -39,6 +43,10 @@ export class TablesService {
     }
   }
 
+  /**
+   * 테이블 상세 조회
+   * @param getTableDto
+   */
   async getTable(getTableDto: GetTableDto) {
     try {
       this.connection = await this.databaseService.getDBConnection();
