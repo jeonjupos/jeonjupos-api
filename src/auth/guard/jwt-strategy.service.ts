@@ -13,7 +13,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'auth-jwt') {
   }
 
   validate(payload: any) {
-    // TODO: DB에 저장된 토큰 검증
     return payload;
   }
 }
