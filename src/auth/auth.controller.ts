@@ -4,7 +4,7 @@ import {
   Body,
   Response,
   UseGuards,
-  Request,
+  Req,
 } from '@nestjs/common';
 import { ResponseUtil } from '../util/response/response.util';
 import { LoginDto } from './dto/login.dto';
@@ -48,6 +48,7 @@ export class AuthController {
         return this.responseUtil.response(res, 200, '0001', '', {});
       }
     } catch (err) {
+      console.log(err);
       if (err.name === 'UnauthorizedException') {
         return this.responseUtil.response(res, err.status, '8995', '', {});
       }
@@ -62,9 +63,9 @@ export class AuthController {
    */
   @Post('/jwt/login')
   @UseGuards(AuthGuard('auth-jwt'))
-  async jwtLogin(@Response() res: Response, @Request() req: Request) {
+  async jwtLogin(@Response() res: Response, @Req() req: any) {
     try {
-      const token = req['token'];
+      const [type, token] = req.headers.authorization.split(' ');
       // 토큰으로 회원 조회
       const owner = await this.authLoginService.getOwner(token);
       if (owner === null) {

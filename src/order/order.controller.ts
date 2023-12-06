@@ -21,18 +21,20 @@ export class OrderController {
   async order(@Response() res: Response, @Body() orderDto: OrderDto) {
     try {
       // 테이블 유효성 체크
-      const space = await this.orderService.getSpaceValid(orderDto.spacepkey);
-      if (space.length === 0) {
+      const spaceSet = await this.orderService.getSpaceValid(
+        orderDto.spacepkey,
+      );
+      if (spaceSet.length === 0) {
         // 테이블 조회 안됨
         return this.responseUtil.response(res, 200, '0008', '', {});
-      } else if (space[0].isactiveyn === false) {
+      } else if (spaceSet[0].isactiveyn === false) {
         // 비활성화된 테이블
         return this.responseUtil.response(res, 200, '0009', '', {});
       }
 
       if (orderDto.orderinfopkey === 0) {
         // 첫 주문시 테이블 상태 유효성 체크
-        if (space[0].eatingyn === true) {
+        if (spaceSet[0].eatingyn === true) {
           return this.responseUtil.response(res, 200, '0007', '', {});
         }
       }

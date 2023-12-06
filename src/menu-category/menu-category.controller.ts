@@ -16,8 +16,8 @@ export class MenuCategoryController {
    * @param res
    * @param getCategoryListDto
    */
-  @UseGuards(AuthGuard('auth-jwt'))
   @Get('/list')
+  @UseGuards(AuthGuard('auth-jwt'))
   async menuCategoryList(
     @Response() res: Response,
     @Query() getCategoryListDto: GetCategoryListDto,

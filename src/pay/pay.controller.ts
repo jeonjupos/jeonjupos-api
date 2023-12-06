@@ -32,14 +32,14 @@ export class PayController {
         return this.responseUtil.response(res, 200, '0011', '', {});
       } else {
         // 결제정보 조회
-        const payinfos = await this.payService.getPayInfos(
+        const payinfoSet = await this.payService.getPayInfoList(
           payDto.orderinfopkey,
         );
         // 결제할 수 있는 금액 조회
-        if (payinfos.length === 0) {
+        if (payinfoSet.length === 0) {
           restpayprice = orderinfo.orderprice;
         } else {
-          const payinfo = payinfos[0];
+          const payinfo = payinfoSet[0];
           restpayprice = payinfo.expectedrestprice;
         }
 
@@ -74,7 +74,7 @@ export class PayController {
         return this.responseUtil.response(
           res,
           200,
-          '0000',
+          '0012',
           payResult.message,
           {},
         );

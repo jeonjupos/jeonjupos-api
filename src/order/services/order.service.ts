@@ -64,6 +64,7 @@ export class OrderService {
     try {
       this.connection = await this.databaseService.getDBConnection();
       await this.connection.beginTransaction();
+
       if (orderDto.orderinfopkey === 0) {
         // 테이블 식사 중으로 변경
         await this.modifySpace(this.connection, orderDto.spacepkey);
@@ -105,15 +106,7 @@ export class OrderService {
       await this.connection.commit();
       return orderDto.orderinfopkey;
     } catch (err) {
-      if (err.name === 'DBError') {
-        await this.connection.rollback();
-      } else if (err.name === 'STOCK_ERR') {
-        // 재고 부족
-        await this.connection.rollback();
-      } else if (err.name === 'MENU_NOT_FOUND') {
-        // 메뉴를 찾을 수 없음
-        await this.connection.rollback();
-      }
+      await this.connection.rollback();
       throw err;
     } finally {
       this.connection.release();

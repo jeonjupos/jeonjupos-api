@@ -28,7 +28,6 @@ export class AuthLoginService {
   }> {
     try {
       this.connection = await this.databaseService.getDBConnection();
-
       // 회원 조회
       const owner = await this.authModel.getOwnerOne(this.connection, loginDto);
       if (owner.length !== 1) {

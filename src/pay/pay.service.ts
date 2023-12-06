@@ -19,14 +19,14 @@ export class PayService {
   async getOrderInfo(orderinfopkey: number) {
     try {
       this.connection = await this.databaseService.getDBConnection();
-      const orderinfo = await this.payModel.getOrderInfo(
+      const orderinfoSet = await this.payModel.getOrderInfo(
         this.connection,
         orderinfopkey,
       );
-      if (orderinfo.length === 0) {
+      if (orderinfoSet.length === 0) {
         return null;
       } else {
-        return orderinfo[0];
+        return orderinfoSet[0];
       }
     } catch (err) {
       throw err;
@@ -41,7 +41,7 @@ export class PayService {
    * @param payprice
    */
   payInfoStatus(
-    restpayprice,
+    restpayprice: number,
     payprice: number,
   ): { paystatus: string; expectedrestprice: number } {
     const paystatus = restpayprice === payprice ? 'complete' : 'partpay';
@@ -49,7 +49,7 @@ export class PayService {
     return { paystatus: paystatus, expectedrestprice: expectedrestprice };
   }
 
-  async getPayInfos(orderinfopkey: number) {
+  async getPayInfoList(orderinfopkey: number) {
     try {
       this.connection = await this.databaseService.getDBConnection();
       return await this.payModel.getPayInfos(this.connection, orderinfopkey);
@@ -68,13 +68,14 @@ export class PayService {
    */
   async cashPay(payDto: PayDto, orderinfo: object, restpayprice: number) {
     try {
+      this.connection = await this.databaseService.getDBConnection();
+      await this.connection.beginTransaction();
+
       // 결제상태, 결제후 남은금액 조회
       const { paystatus, expectedrestprice } = this.payInfoStatus(
         restpayprice,
         payDto.payprice,
       );
-      this.connection = await this.databaseService.getDBConnection();
-      await this.connection.beginTransaction();
 
       // 결제정보 생성
       const payinfo = await this.payModel.insertPayInfo(
@@ -98,9 +99,8 @@ export class PayService {
       await this.connection.commit();
       return { result: true, message: '성공' };
     } catch (err) {
-      if (err.name === 'DBError') {
-        await this.connection.rollback();
-      }
+      await this.connection.rollback();
+      throw err;
     } finally {
       this.connection.release();
     }
@@ -114,12 +114,13 @@ export class PayService {
    */
   async cardPay(payDto: PayDto, orderinfo: object, restpayprice: number) {
     try {
+      this.connection = await this.databaseService.getDBConnection();
+      await this.connection.beginTransaction();
+
       const { paystatus, expectedrestprice } = this.payInfoStatus(
         restpayprice,
         payDto.payprice,
       );
-      this.connection = await this.databaseService.getDBConnection();
-      await this.connection.beginTransaction();
 
       const payinfo = await this.payModel.insertPayInfo(
         this.connection,
@@ -140,9 +141,8 @@ export class PayService {
       await this.connection.commit();
       return { result: true, message: '성공' };
     } catch (err) {
-      if (err.name === 'DBError') {
-        await this.connection.rollback();
-      }
+      await this.connection.rollback();
+      throw err;
     } finally {
       this.connection.release();
     }
@@ -156,12 +156,13 @@ export class PayService {
    */
   async afterPay(payDto: PayDto, orderinfo: object, restpayprice: number) {
     try {
+      this.connection = await this.databaseService.getDBConnection();
+      await this.connection.beginTransaction();
+
       const { paystatus, expectedrestprice } = this.payInfoStatus(
         restpayprice,
         payDto.payprice,
       );
-      this.connection = await this.databaseService.getDBConnection();
-      await this.connection.beginTransaction();
 
       const payinfo = await this.payModel.insertPayInfo(
         this.connection,
@@ -182,9 +183,8 @@ export class PayService {
       await this.connection.commit();
       return { result: true, message: '성공' };
     } catch (err) {
-      if (err.name === 'DBError') {
-        await this.connection.rollback();
-      }
+      await this.connection.rollback();
+      throw err;
     } finally {
       this.connection.release();
     }
@@ -194,7 +194,7 @@ export class PayService {
    * 결제 완료 후 주문서 결제 상태, 테이블 식사여부 변경
    * @param orderinfo
    */
-  async payCompleteModify(orderinfo) {
+  async payCompleteModify(orderinfo: any) {
     try {
       this.connection = await this.databaseService.getDBConnection();
       await this.connection.beginTransaction();
@@ -209,10 +209,10 @@ export class PayService {
       await this.payModel.modifySpace(this.connection, orderinfo.spacepkey);
 
       await this.connection.commit();
+      return true;
     } catch (err) {
-      if (err.name === 'DBError') {
-        await this.connection.rollback();
-      }
+      await this.connection.rollback();
+      throw err;
     } finally {
       this.connection.release();
     }

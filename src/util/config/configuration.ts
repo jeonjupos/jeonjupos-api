@@ -2,7 +2,7 @@ import { ConfigFactory } from '@nestjs/config';
 import { config } from 'dotenv';
 import { Configuration } from './configuration.interface';
 import * as process from 'process';
-config({ path: `.env` });
+config({ path: `./src/.env` });
 config({ path: `./src/.${process.env.NODE_ENV}.env` });
 
 const configuration: Configuration = {
