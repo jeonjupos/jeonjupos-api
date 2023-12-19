@@ -16,8 +16,8 @@ export class MenuController {
    * @param res
    * @param getMenuListDto
    */
-  @UseGuards(AuthGuard('auth-jwt'))
   @Get('/list')
+  @UseGuards(AuthGuard('auth-jwt'))
   async getMenuList(
     @Response() res: Response,
     @Query() getMenuListDto: GetMenuListDto,

@@ -1,8 +1,18 @@
-import { Controller, UseGuards, Response, Body, Post } from '@nestjs/common';
+import {
+  Controller,
+  UseGuards,
+  Response,
+  Body,
+  Post,
+  Get,
+  Req,
+  Query,
+} from '@nestjs/common';
 import { ResponseUtil } from '../util/response/response.util';
 import { OrderService } from './services/order.service';
 import { OrderDto } from './dto/order.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { GetDeliveryOrderListDto } from './dto/get-delivery-order-list.dto';
 
 @Controller('order')
 export class OrderController {
@@ -50,6 +60,45 @@ export class OrderController {
       } else if (err.name === 'MENU_NOT_FOUND') {
         return this.responseUtil.response(res, 200, '0010', err.message, {});
       }
+      return this.responseUtil.response(res, 500, '9999', '', {});
+    }
+  }
+
+  /**
+   * 배달 주문 목록 조회
+   * @param req
+   * @param res
+   * @param getDeliveryOrderListDto
+   */
+  @Get('/delivery/list')
+  @UseGuards(AuthGuard('auth-jwt'))
+  async getDeliveryOrderList(
+    @Req() req: any,
+    @Response() res: Response,
+    @Query() getDeliveryOrderListDto: GetDeliveryOrderListDto,
+  ) {
+    try {
+      const storepkey = getDeliveryOrderListDto.storepkey;
+      return this.responseUtil.response(res, 200, '0000', '', {
+        orderlist: [
+          {
+            orderpkey: 1,
+            address: '보광아파트 6동 404호',
+            ordermenus: '칼국수 1개, 된장찌개 2개',
+          },
+          {
+            orderpkey: 1,
+            address: '보광아파트 6동 404호',
+            ordermenus: '칼국수 1개, 된장찌개 2개',
+          },
+          {
+            orderpkey: 1,
+            address: '보광아파트 6동 404호',
+            ordermenus: '칼국수 1개, 된장찌개 2개',
+          },
+        ],
+      });
+    } catch (err) {
       return this.responseUtil.response(res, 500, '9999', '', {});
     }
   }
