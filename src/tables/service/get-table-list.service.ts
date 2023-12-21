@@ -7,14 +7,17 @@ import { GetTablesDto } from "../dto/get-tables.dto";
 @Injectable()
 export class GetTableListService {
   private connection: PoolConnection;
+  private tableSet: any[];
   constructor(
     private databaseService: DatabaseService,
     private tablesModel: TablesModel,
   ) {}
 
-  async getTableOrderList(connection: PoolConnection, spacepkey: number): Promise<any[]> {
-    const tableOrderList = await this.tablesModel.getTablesOrderList(connection, spacepkey);
-    return tableOrderList.filter((tableOrder: { count: number; }) => {tableOrder.count > 0;});
+  async getTableOrderList(): Promise<any[]> {
+    return this.tableSet.map(async (table: { spacepkey: number; }) => {
+      const tableOrderList = await this.tablesModel.getTablesOrderList(this.connection, table.spacepkey);
+      return tableOrderList.filter((tableOrder: { count: number; }) => {tableOrder.count > 0;});
+    });
   }
 
   /**
@@ -24,15 +27,11 @@ export class GetTableListService {
   async getTableList(getTablesDto: GetTablesDto) {
     try {
       this.connection = await this.databaseService.getDBConnection();
-      const tableSet = await this.tablesModel.getTableList(
+      this.tableSet = await this.tablesModel.getTableList(
         this.connection,
         getTablesDto,
       );
-      return await Promise.all(
-        tableSet.map(async (table: { spacepkey: number; }) => {
-          await this.getTableOrderList(this.connection, table.spacepkey);
-        })
-      )
+      return await Promise.all([await this.getTableOrderList()]);
     } catch (err) {
       throw err;
     } finally {

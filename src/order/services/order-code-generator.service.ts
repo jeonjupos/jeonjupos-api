@@ -26,16 +26,10 @@ export class OrderCodeGeneratorService {
       if (orderCodeSet.length === 0) {
         // 주문번호 설정 안된경우 default로 생성함
         await this.orderModel.createOrderCode(connection, storepkey);
-        return 1;
+        this.code = 1;
       } else {
         const coderCode = orderCodeSet[0];
-        if (coderCode.code >= coderCode.codemax) {
-          // 주문번호 리셋
-          this.code = coderCode.codemin;
-        } else {
-          // 주문번호 + 1 업데이트
-          this.code = coderCode.code + 1;
-        }
+        this.code = coderCode.code >= coderCode.codemax ? coderCode.codemin : coderCode.code + 1;
         await this.orderModel.modifyOrderCode(connection, storepkey, this.code);
         return this.code;
       }

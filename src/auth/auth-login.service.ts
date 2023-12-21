@@ -60,11 +60,7 @@ export class AuthLoginService {
     try {
       this.connection = await this.databaseService.getDBConnection();
       const owner = await this.authModel.getOwnerToken(this.connection, token);
-      if (owner.length !== 1) {
-        return null;
-      } else {
-        return owner[0];
-      }
+      return owner.length !== 1 ? null : owner[0];
     } catch (err) {
       throw err;
     } finally {

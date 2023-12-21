@@ -37,9 +37,10 @@ export class OrderController {
         orderDto.spacepkey,
       );
       if (getSpace.resCode !== '0000') {
+        // 테이블 유효성 체크 실패
         return this.responseUtil.response(res, 200, getSpace.resCode, '', {});
       } else {
-        const space = getSpace.space;
+        const space = getSpace.space; // 테이블
         if (orderDto.orderinfopkey === 0) {
           // 첫 주문시 테이블 상태 유효성 체크
           if (space.eatingyn === true) {

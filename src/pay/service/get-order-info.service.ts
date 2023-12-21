@@ -18,15 +18,11 @@ export class GetOrderInfoService {
   async getOrderInfo(orderinfopkey: number) {
     try {
       this.connection = await this.databaseService.getDBConnection();
-      const orderinfoSet = await this.payModel.getOrderInfo(
+      const orderInfoSet = await this.payModel.getOrderInfo(
         this.connection,
         orderinfopkey,
       );
-      if (orderinfoSet.length === 0) {
-        return null;
-      } else {
-        return orderinfoSet[0];
-      }
+      return orderInfoSet.length === 0 ? null : orderInfoSet[0];
     } catch (err) {
       throw err;
     } finally {

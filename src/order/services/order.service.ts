@@ -9,12 +9,45 @@ import { OrderMenuService } from './order-menu.service';
 @Injectable()
 export class OrderService {
   private connection: PoolConnection;
+  private orderPrice: number;
+  private orderMenuList: any[];
+  private orderInfoPkey: number;
   constructor(
     private databaseService: DatabaseService,
     private orderModel: OrderModel,
     private orderMenuService: OrderMenuService,
     private orderCodeGeneratorService: OrderCodeGeneratorService,
   ) {}
+
+  /**
+   * 주문메뉴 조회
+   * @param orderNumTicketPkey
+   * @param orderList
+   */
+  async getOrderMenu(orderNumTicketPkey: number, orderList: any[]) {
+    const { orderPrice, orderMenuList } =
+      await this.orderMenuService.getOrderMenu(
+        this.connection,
+        orderNumTicketPkey,
+        orderList,
+      );
+    this.orderPrice = orderPrice;
+    this.orderMenuList = orderMenuList;
+  }
+
+  /**
+   * 테이블 식사 중으로 변경
+   * @param orderDto
+   */
+  async modifySpaceEating(orderDto: OrderDto) {
+    await this.orderModel.modifySpaceEating(this.connection, orderDto.spacepkey);
+    // 주문서 생성
+    const orderInfo = await this.orderModel.createOrderInfo(
+      this.connection,
+      orderDto,
+    );
+    return orderInfo.insertId;
+  }
 
   /**
    * 주문메뉴 생성
@@ -32,15 +65,9 @@ export class OrderService {
       this.connection = await this.databaseService.getDBConnection();
       await this.connection.beginTransaction();
 
-      if (orderDto.orderinfopkey === 0) {
-        // 테이블 식사 중으로 변경
-        await this.orderModel.modifySpaceEating(this.connection, orderDto.spacepkey);
-        // 주문서 생성
-        const orderInfo = await this.orderModel.createOrderInfo(
-          this.connection,
-          orderDto,
-        );
-        orderDto.orderinfopkey = orderInfo.insertId;
+      this.orderInfoPkey = orderDto.orderinfopkey;
+      if (this.orderInfoPkey === 0) {
+        this.orderInfoPkey = await this.modifySpaceEating(orderDto); // // 테이블 식사 중으로 변경
       }
       // 주문번호 조회
       const ordercode = await this.orderCodeGeneratorService.orderCodeGenerator(
@@ -50,28 +77,22 @@ export class OrderService {
       // 번호표 생성
       const ordernumticket = await this.orderModel.createOrderNumTicket(
         this.connection,
-        orderDto.orderinfopkey,
+        this.orderInfoPkey,
         ordercode,
       );
       // 주문메뉴 조회
-      const { orderPrice, orderMenuList } =
-        await this.orderMenuService.getOrderMenu(
-          this.connection,
-          ordernumticket.insertId,
-          orderDto.orderList,
-        );
+      await this.getOrderMenu(ordernumticket.insertId, orderDto.orderList);
       // 주문메뉴 생성
-      await this.orderModel.createOrderMenu(this.connection, orderMenuList);
-
+      await this.orderModel.createOrderMenu(this.connection, this.orderMenuList);
       // 주문서 주문금액 수정
       await this.orderModel.modifyOrderInfoOrderPrice(
         this.connection,
-        orderDto.orderinfopkey,
-        orderPrice,
+        this.orderInfoPkey,
+        this.orderPrice,
       );
 
       await this.connection.commit();
-      return orderDto.orderinfopkey;
+      return this.orderInfoPkey;
     } catch (err) {
       await this.connection.rollback();
       throw err;
