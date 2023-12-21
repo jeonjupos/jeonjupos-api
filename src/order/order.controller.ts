@@ -13,12 +13,14 @@ import { OrderService } from './services/order.service';
 import { OrderDto } from './dto/order.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetDeliveryOrderListDto } from './dto/get-delivery-order-list.dto';
+import { GetSpaceValidService } from "./services/get-space-valid.service";
 
 @Controller('order')
 export class OrderController {
   constructor(
     private responseUtil: ResponseUtil,
     private orderService: OrderService,
+    private getSpaceValidService: GetSpaceValidService,
   ) {}
 
   /**
@@ -31,7 +33,7 @@ export class OrderController {
   async order(@Response() res: Response, @Body() orderDto: OrderDto) {
     try {
       // 테이블 유효성 체크
-      const getSpace = await this.orderService.getSpaceValid(
+      const getSpace = await this.getSpaceValidService.getSpaceValid(
         orderDto.spacepkey,
       );
       if (getSpace.resCode !== '0000') {

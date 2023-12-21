@@ -69,23 +69,21 @@ export class TablesModel {
   /**
    * 주문서 정보 조회
    * @param connection
-   * @param getTableDto
+   * @param spacepkey
    */
-  async getOrderInfo(connection: PoolConnection, getTableDto: GetTableDto) {
+  async getOrderInfo(connection: PoolConnection, spacepkey: number) {
     try {
-      this.sql = `
-        select 
-            orderinfopkey, orderinfopkey, paysuccessyn, orderprice, 
-            reserveyn, date_format(reservedate, '%Y-%m-%d %H:%i') reservedate, deliveryyn, deliveryaddress, 
-            date_format(regdate, '%Y-%m-%d %H:%i') regdate
-        from orderinfo 
-        where spacepkey=?
-      `;
-      this.params = [getTableDto.spacepkey];
       return await this.databaseService.dbQuery(
         connection,
-        this.sql,
-        this.params,
+        `
+          select 
+              orderinfopkey, orderinfopkey, paysuccessyn, orderprice, 
+              reserveyn, date_format(reservedate, '%Y-%m-%d %H:%i') reservedate, deliveryyn, deliveryaddress, 
+              date_format(regdate, '%Y-%m-%d %H:%i') regdate
+          from orderinfo 
+          where spacepkey=?
+        `,
+        [spacepkey],
       );
     } catch (err) {
       throw err;

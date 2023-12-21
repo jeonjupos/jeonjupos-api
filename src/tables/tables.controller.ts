@@ -1,15 +1,17 @@
 import { Controller, Get, Query, Response, UseGuards } from '@nestjs/common';
 import { GetTablesDto } from './dto/get-tables.dto';
 import { ResponseUtil } from '../util/response/response.util';
-import { TablesService } from './tables.service';
 import { GetTableDto } from './dto/get-table.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { GetTableListService } from "./service/get-table-list.service";
+import { GetTableService } from "./service/get-table.service";
 
 @Controller('table')
 export class TablesController {
   constructor(
-    private responseUtil: ResponseUtil,
-    private tablesService: TablesService,
+    private readonly responseUtil: ResponseUtil,
+    private readonly getTableListService: GetTableListService,
+    private readonly getTableService: GetTableService,
   ) {}
 
   /**
@@ -24,7 +26,7 @@ export class TablesController {
     @Response() res: Response,
   ) {
     try {
-      const tables = await this.tablesService.getTableList(getTablesDto);
+      const tables = await this.getTableListService.getTableList(getTablesDto);
       return this.responseUtil.response(res, 200, '0000', '', {
         tables: tables,
       });
@@ -42,7 +44,7 @@ export class TablesController {
   @UseGuards(AuthGuard('auth-jwt'))
   async getTable(@Query() getTableDto: GetTableDto, @Response() res: Response) {
     try {
-      const tableorder = await this.tablesService.getTable(getTableDto);
+      const tableorder = await this.getTableService.getTable(getTableDto);
       return this.responseUtil.response(res, 200, '0000', '', {
         tableorder,
       });

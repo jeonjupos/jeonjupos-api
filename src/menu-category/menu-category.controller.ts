@@ -1,14 +1,14 @@
 import { Controller, Get, UseGuards, Response, Query } from '@nestjs/common';
 import { ResponseUtil } from '../util/response/response.util';
 import { GetCategoryListDto } from './dto/menu-category.dto';
-import { MenuCategoryService } from './menu-category.service';
+import { GetCategoryListService } from './service/get-category-list.service';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('menu-category')
 export class MenuCategoryController {
   constructor(
     private responseUtil: ResponseUtil,
-    private menuCategoryService: MenuCategoryService,
+    private getCategoryListService: GetCategoryListService,
   ) {}
 
   /**
@@ -24,7 +24,7 @@ export class MenuCategoryController {
   ) {
     try {
       return this.responseUtil.response(res, 200, '0000', '', {
-        categorylist: await this.menuCategoryService.getCategoryList(
+        categorylist: await this.getCategoryListService.getCategoryList(
           getCategoryListDto,
         ),
       });

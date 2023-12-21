@@ -17,53 +17,6 @@ export class OrderService {
   ) {}
 
   /**
-   * 테이블 유효성 체크를 위한 조회
-   * @param spacepkey
-   */
-  async getSpaceValid(spacepkey: number) {
-    try {
-      this.connection = await this.databaseService.getDBConnection();
-      const spaceSet = await this.orderModel.getSpace(
-        this.connection,
-        spacepkey,
-      );
-      if (spaceSet.length === 0) {
-        return { resCode: '0008', space: null };
-      } else {
-        const space = spaceSet[0];
-        if (space.isactiveyn === false) {
-          // 비활성화된 테이블
-          return { resCode: '0009', space: space };
-        } else {
-          return { resCode: '0000', space: space };
-        }
-      }
-    } catch (err) {
-      throw err;
-    } finally {
-      this.connection.release();
-    }
-  }
-
-  /**
-   * 테이블 식사중으로 변경
-   * @param connection
-   * @param spacepkey
-   */
-  async modifySpace(
-    connection: PoolConnection,
-    spacepkey: number,
-  ): Promise<boolean> {
-    try {
-      // 테이블 식사중으로 변경
-      await this.orderModel.modifySpaceEating(connection, spacepkey);
-      return true;
-    } catch (err) {
-      throw err;
-    }
-  }
-
-  /**
    * 주문메뉴 생성
    * 1. 테이블 식사중으로 변경
    * 2. 주문서 생성(첫주문시)
@@ -81,7 +34,7 @@ export class OrderService {
 
       if (orderDto.orderinfopkey === 0) {
         // 테이블 식사 중으로 변경
-        await this.modifySpace(this.connection, orderDto.spacepkey);
+        await this.orderModel.modifySpaceEating(this.connection, orderDto.spacepkey);
         // 주문서 생성
         const orderInfo = await this.orderModel.createOrderInfo(
           this.connection,

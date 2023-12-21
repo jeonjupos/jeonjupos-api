@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TablesController } from './tables.controller';
-import { TablesService } from './tables.service';
 import { TablesModel } from './tables.model';
+import { GetTableService } from "./service/get-table.service";
+import { GetTableListService } from "./service/get-table-list.service";
 
 @Module({
   controllers: [TablesController],
-  providers: [TablesService, TablesModel],
+  providers: [GetTableService, GetTableListService, TablesModel],
 })
 export class TablesModule {}

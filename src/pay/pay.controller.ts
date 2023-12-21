@@ -1,14 +1,20 @@
 import { Body, Controller, Post, Response, UseGuards } from '@nestjs/common';
-import { PayService } from './pay.service';
+import { PayService } from './service/pay.service';
 import { ResponseUtil } from '../util/response/response.util';
 import { PayDto } from './dto/pay.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { GetOrderInfoService } from "./service/get-order-info.service";
+import { GetPayInfoListService } from "./service/get-pay-info-list.service";
+import { PayCompleteModifyService } from "./service/pay-complete-modify.service";
 
 @Controller('pay')
 export class PayController {
   constructor(
     private payService: PayService,
     private responseUtil: ResponseUtil,
+    private getOrderInfoService: GetOrderInfoService,
+    private getPayInfoListService: GetPayInfoListService,
+    private payCompleteModifyService: PayCompleteModifyService,
   ) {}
 
   /**
@@ -24,7 +30,7 @@ export class PayController {
       let restpayprice: number; // 결제해야할 금액 조회
 
       // 주문정보 조회
-      const orderinfo = await this.payService.getOrderInfo(
+      const orderinfo = await this.getOrderInfoService.getOrderInfo(
         payDto.orderinfopkey,
       );
 
@@ -32,7 +38,7 @@ export class PayController {
         return this.responseUtil.response(res, 200, '0011', '', {});
       } else {
         // 결제정보 조회
-        const payinfoSet = await this.payService.getPayInfoList(
+        const payinfoSet = await this.getPayInfoListService.getPayInfoList(
           payDto.orderinfopkey,
         );
         // 결제할 수 있는 금액 조회
@@ -69,7 +75,7 @@ export class PayController {
       } else {
         if (payDto.payprice === restpayprice) {
           // 주문서 정보 결제완료여부 변경, 테이블 식사여부 변경
-          await this.payService.payCompleteModify(orderinfo);
+          await this.payCompleteModifyService.payCompleteModify(orderinfo);
         }
         return this.responseUtil.response(res, 200, '0000', '', {});
       }
