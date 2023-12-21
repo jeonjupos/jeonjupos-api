@@ -1,14 +1,14 @@
 import { Controller, Query, Response, UseGuards, Get } from '@nestjs/common';
 import { ResponseUtil } from '../util/response/response.util';
 import { GetMenuListDto } from './dto/get-menu-list.dto';
-import { MenuService } from './menu.service';
+import { GetMenuListService } from './service/get-menu-list.service';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('menu')
 export class MenuController {
   constructor(
     private responseUtil: ResponseUtil,
-    private menuService: MenuService,
+    private getMenuListService: GetMenuListService,
   ) {}
 
   /**
@@ -24,7 +24,7 @@ export class MenuController {
   ) {
     try {
       return this.responseUtil.response(res, 200, '0000', '', {
-        menulist: await this.menuService.getMenuList(getMenuListDto),
+        menulist: await this.getMenuListService.getMenuList(getMenuListDto),
       });
     } catch (err) {
       return this.responseUtil.response(res, 500, '9999', '', {});

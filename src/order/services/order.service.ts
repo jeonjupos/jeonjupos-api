@@ -23,7 +23,21 @@ export class OrderService {
   async getSpaceValid(spacepkey: number) {
     try {
       this.connection = await this.databaseService.getDBConnection();
-      return await this.orderModel.getSpace(this.connection, spacepkey);
+      const spaceSet = await this.orderModel.getSpace(
+        this.connection,
+        spacepkey,
+      );
+      if (spaceSet.length === 0) {
+        return { resCode: '0008', space: null };
+      } else {
+        const space = spaceSet[0];
+        if (space.isactiveyn === false) {
+          // 비활성화된 테이블
+          return { resCode: '0009', space: space };
+        } else {
+          return { resCode: '0000', space: space };
+        }
+      }
     } catch (err) {
       throw err;
     } finally {

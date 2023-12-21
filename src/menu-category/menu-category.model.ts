@@ -5,9 +5,6 @@ import { PoolConnection } from 'mysql2/promise';
 
 @Injectable()
 export class MenuCategoryModel {
-  private sql: string;
-  private params: any[];
-
   constructor(private databaseService: DatabaseService) {}
 
   /**
@@ -19,18 +16,12 @@ export class MenuCategoryModel {
     connection: PoolConnection,
     getCategoryListDto: GetCategoryListDto,
   ) {
-    try {
-      this.sql = `
+    return await this.databaseService.dbQuery(
+      connection,
+      `
         select categorypkey, categoryname from category where storepkey=? and useyn=true order by sort;
-      `;
-      this.params = [getCategoryListDto.storepkey];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+      `,
+      [getCategoryListDto.storepkey],
+    );
   }
 }

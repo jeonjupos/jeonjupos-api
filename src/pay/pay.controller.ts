@@ -40,7 +40,7 @@ export class PayController {
           restpayprice = orderinfo.orderprice;
         } else {
           const payinfo = payinfoSet[0];
-          restpayprice = payinfo.expectedrestprice;
+          restpayprice = payinfo.expectedrestprice; // 마지막 결제후 남은 금액
         }
 
         // 결제금액 유효성 체크
@@ -50,23 +50,11 @@ export class PayController {
         }
 
         if (payDto.paytype === 'cash') {
-          payResult = await this.payService.cashPay(
-            payDto,
-            orderinfo,
-            restpayprice,
-          );
+          payResult = await this.payService.cashPay(payDto, restpayprice);
         } else if (payDto.paytype === 'card') {
-          payResult = await this.payService.cardPay(
-            payDto,
-            orderinfo,
-            restpayprice,
-          );
+          payResult = await this.payService.cardPay(payDto, restpayprice);
         } else if (payDto.paytype === 'after') {
-          payResult = await this.payService.afterPay(
-            payDto,
-            orderinfo,
-            restpayprice,
-          );
+          payResult = await this.payService.afterPay(payDto, restpayprice);
         }
       }
 

@@ -5,9 +5,6 @@ import { OrderDto, OrderMenuDto } from './dto/order.dto';
 
 @Injectable()
 export class OrderModel {
-  private sql: string;
-  private params: any[];
-
   constructor(private databaseService: DatabaseService) {}
 
   /**
@@ -16,17 +13,11 @@ export class OrderModel {
    * @param spacepkey
    */
   async getSpace(connection: PoolConnection, spacepkey: number) {
-    try {
-      this.sql = `select * from space where spacepkey=?;`;
-      this.params = [spacepkey];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `select * from space where spacepkey=?;`,
+      [spacepkey],
+    );
   }
 
   /**
@@ -35,17 +26,11 @@ export class OrderModel {
    * @param spacepkey
    */
   async modifySpaceEating(connection: PoolConnection, spacepkey: number) {
-    try {
-      this.sql = `update space set eatingyn=true where spacepkey=?`;
-      this.params = [spacepkey];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `update space set eatingyn=true where spacepkey=?`,
+      [spacepkey],
+    );
   }
 
   /**
@@ -54,17 +39,11 @@ export class OrderModel {
    * @param orderMenu
    */
   async getMenu(connection: PoolConnection, orderMenu: OrderMenuDto) {
-    try {
-      this.sql = `select * from menu where menupkey=? for update`;
-      this.params = [orderMenu.menupkey];
-      return await await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `select * from menu where menupkey=? for update`,
+      [orderMenu.menupkey],
+    );
   }
 
   /**
@@ -78,17 +57,11 @@ export class OrderModel {
     menupkey: number,
     count: number,
   ) {
-    try {
-      this.sql = `update menu set stock=stock+? where menupkey=? and dailystock > stock+?`;
-      this.params = [count, menupkey, count];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `update menu set stock=stock+? where menupkey=? and dailystock > stock+?`,
+      [count, menupkey, count],
+    );
   }
 
   /**
@@ -97,11 +70,10 @@ export class OrderModel {
    * @param orderDto
    */
   async createOrderInfo(connection: PoolConnection, orderDto: OrderDto) {
-    try {
-      this.sql = `
-        insert into orderinfo (spacepkey, storepkey, reserveyn, deliveryyn, deliveryaddress, reservedate, regdate, paysuccessyn, orderprice) values (?, ?, ?, ?, ?, ?, now(), ?, ?)
-      `;
-      this.params = [
+    return await this.databaseService.dbQuery(
+      connection,
+      `insert into orderinfo (spacepkey, storepkey, reserveyn, deliveryyn, deliveryaddress, reservedate, regdate, paysuccessyn, orderprice) values (?, ?, ?, ?, ?, ?, now(), ?, ?)`,
+      [
         orderDto.spacepkey,
         orderDto.storepkey,
         orderDto.reserveyn,
@@ -110,15 +82,8 @@ export class OrderModel {
         orderDto.reservedate,
         false,
         0,
-      ];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+      ],
+    );
   }
 
   /**
@@ -127,17 +92,11 @@ export class OrderModel {
    * @param storepkey
    */
   async getOrderCode(connection: PoolConnection, storepkey: number) {
-    try {
-      this.sql = `select * from ordercode where storepkey=?;`;
-      this.params = [storepkey];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `select * from ordercode where storepkey=?;`,
+      [storepkey],
+    );
   }
 
   /**
@@ -146,17 +105,11 @@ export class OrderModel {
    * @param storepkey
    */
   async createOrderCode(connection: PoolConnection, storepkey: number) {
-    try {
-      this.sql = `insert into ordercode (storepkey, codemin, codemax, code) values (?, 1, 500, 1);`;
-      this.params = [storepkey];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `insert into ordercode (storepkey, codemin, codemax, code) values (?, 1, 500, 1);`,
+      [storepkey],
+    );
   }
 
   /**
@@ -170,17 +123,11 @@ export class OrderModel {
     storepkey: number,
     code: number,
   ) {
-    try {
-      this.sql = `update ordercode set code=? where storepkey=?;`;
-      this.params = [code, storepkey];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `update ordercode set code=? where storepkey=?;`,
+      [code, storepkey],
+    );
   }
 
   /**
@@ -194,17 +141,11 @@ export class OrderModel {
     orderinfopkey: number,
     ordernum: number,
   ) {
-    try {
-      this.sql = `insert into ordernumticket (orderinfopkey, ordernum) values (?, ?)`;
-      this.params = [orderinfopkey, ordernum];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `insert into ordernumticket (orderinfopkey, ordernum) values (?, ?)`,
+      [orderinfopkey, ordernum],
+    );
   }
 
   /**
@@ -216,17 +157,11 @@ export class OrderModel {
     connection: PoolConnection,
     orderMenuList: OrderMenuDto[],
   ) {
-    try {
-      this.sql = `insert into ordermenu (menupkey, ordernumticketpkey, menuname, originprice, discountyn, discountrate, saleprice, stock, useyn, sort, takeoutyn, takeinyn, takeoutprice, count, additionaldiscount, cancelyn) values ?`;
-      this.params = [orderMenuList];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `insert into ordermenu (menupkey, ordernumticketpkey, menuname, originprice, discountyn, discountrate, saleprice, stock, useyn, sort, takeoutyn, takeinyn, takeoutprice, count, additionaldiscount, cancelyn) values ?`,
+      [orderMenuList],
+    );
   }
 
   /**
@@ -240,18 +175,12 @@ export class OrderModel {
     orderinfopkey: number,
     orderprice: number,
   ) {
-    try {
-      this.sql = `
+    return await this.databaseService.dbQuery(
+      connection,
+      `
         update orderinfo set orderprice=orderprice+? where orderinfopkey=?;
-      `;
-      this.params = [orderprice, orderinfopkey];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+      `,
+      [orderprice, orderinfopkey],
+    );
   }
 }

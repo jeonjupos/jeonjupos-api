@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database/database.service';
-import { GetMenuListDto } from './dto/get-menu-list.dto';
+import { DatabaseService } from '../../database/database.service';
+import { GetMenuListDto } from '../dto/get-menu-list.dto';
 import { PoolConnection } from 'mysql2/promise';
-import { MenuModel } from './menu.model';
+import { MenuModel } from '../menu.model';
 
 @Injectable()
-export class MenuService {
+export class GetMenuListService {
   private connection: PoolConnection;
 
   constructor(

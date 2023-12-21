@@ -22,7 +22,7 @@ export class OrderController {
   ) {}
 
   /**
-   * 취소건으로 변경시 취소건으로 저장함
+   // * 취소건으로 변경시 취소건으로 저장함
    * @param res
    * @param orderDto
    */
@@ -31,29 +31,25 @@ export class OrderController {
   async order(@Response() res: Response, @Body() orderDto: OrderDto) {
     try {
       // 테이블 유효성 체크
-      const spaceSet = await this.orderService.getSpaceValid(
+      const getSpace = await this.orderService.getSpaceValid(
         orderDto.spacepkey,
       );
-      if (spaceSet.length === 0) {
-        // 테이블 조회 안됨
-        return this.responseUtil.response(res, 200, '0008', '', {});
-      } else if (spaceSet[0].isactiveyn === false) {
-        // 비활성화된 테이블
-        return this.responseUtil.response(res, 200, '0009', '', {});
-      }
-
-      if (orderDto.orderinfopkey === 0) {
-        // 첫 주문시 테이블 상태 유효성 체크
-        if (spaceSet[0].eatingyn === true) {
-          return this.responseUtil.response(res, 200, '0007', '', {});
+      if (getSpace.resCode !== '0000') {
+        return this.responseUtil.response(res, 200, getSpace.resCode, '', {});
+      } else {
+        const space = getSpace.space;
+        if (orderDto.orderinfopkey === 0) {
+          // 첫 주문시 테이블 상태 유효성 체크
+          if (space.eatingyn === true) {
+            return this.responseUtil.response(res, 200, '0007', '', {});
+          }
         }
+        // 주문서 생성 및 수정, 번호표 생성, 주문메뉴 생성
+        const orderinfopkey = await this.orderService.order(orderDto);
+        return this.responseUtil.response(res, 200, '0000', '', {
+          orderinfopkey: orderinfopkey,
+        });
       }
-
-      // 주문서 생성 및 수정, 번호표 생성, 주문메뉴 생성
-      const orderinfopkey = await this.orderService.order(orderDto);
-      return this.responseUtil.response(res, 200, '0000', '', {
-        orderinfopkey: orderinfopkey,
-      });
     } catch (err) {
       if (err.name === 'STOCK_ERR') {
         return this.responseUtil.response(res, 200, '0006', err.message, {});

@@ -49,6 +49,10 @@ export class PayService {
     return { paystatus: paystatus, expectedrestprice: expectedrestprice };
   }
 
+  /**
+   * 결제정보 조회
+   * @param orderinfopkey
+   */
   async getPayInfoList(orderinfopkey: number) {
     try {
       this.connection = await this.databaseService.getDBConnection();
@@ -63,10 +67,9 @@ export class PayService {
   /**
    * 현금결제
    * @param payDto
-   * @param orderinfo
    * @param restpayprice
    */
-  async cashPay(payDto: PayDto, orderinfo: object, restpayprice: number) {
+  async cashPay(payDto: PayDto, restpayprice: number) {
     try {
       this.connection = await this.databaseService.getDBConnection();
       await this.connection.beginTransaction();
@@ -109,10 +112,9 @@ export class PayService {
   /**
    * 카드결제
    * @param payDto
-   * @param orderinfo
    * @param restpayprice
    */
-  async cardPay(payDto: PayDto, orderinfo: object, restpayprice: number) {
+  async cardPay(payDto: PayDto, restpayprice: number) {
     try {
       this.connection = await this.databaseService.getDBConnection();
       await this.connection.beginTransaction();
@@ -151,10 +153,9 @@ export class PayService {
   /**
    * 후불결제
    * @param payDto
-   * @param orderinfo
    * @param restpayprice
    */
-  async afterPay(payDto: PayDto, orderinfo: object, restpayprice: number) {
+  async afterPay(payDto: PayDto, restpayprice: number) {
     try {
       this.connection = await this.databaseService.getDBConnection();
       await this.connection.beginTransaction();

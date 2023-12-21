@@ -5,6 +5,7 @@ import { OrderModel } from '../order.model';
 // 주문번호 조회 및 변경
 @Injectable()
 export class OrderCodeGeneratorService {
+  private code: number;
   constructor(private orderModel: OrderModel) {}
 
   /**
@@ -12,35 +13,31 @@ export class OrderCodeGeneratorService {
    * @param connection
    * @param storepkey
    */
-  async orderCodeGenerator(connection: PoolConnection, storepkey: number) {
+  async orderCodeGenerator(
+    connection: PoolConnection,
+    storepkey: number,
+  ): Promise<number> {
     try {
       // 주문번호 조회
-      const ordercode = await this.orderModel.getOrderCode(
+      const orderCodeSet = await this.orderModel.getOrderCode(
         connection,
         storepkey,
       );
-      if (ordercode.length === 0) {
+      if (orderCodeSet.length === 0) {
         // 주문번호 설정 안된경우 default로 생성함
         await this.orderModel.createOrderCode(connection, storepkey);
         return 1;
       } else {
-        if (ordercode[0].code >= ordercode[0].codemax) {
-          // 주문번호 최소 변경
-          await this.orderModel.modifyOrderCode(
-            connection,
-            storepkey,
-            ordercode[0].codemin,
-          );
-          return ordercode[0].codemin;
+        const coderCode = orderCodeSet[0];
+        if (coderCode.code >= coderCode.codemax) {
+          // 주문번호 리셋
+          this.code = coderCode.codemin;
         } else {
           // 주문번호 + 1 업데이트
-          await this.orderModel.modifyOrderCode(
-            connection,
-            storepkey,
-            ordercode[0].code + 1,
-          );
-          return ordercode[0].code + 1;
+          this.code = coderCode.code + 1;
         }
+        await this.orderModel.modifyOrderCode(connection, storepkey, this.code);
+        return this.code;
       }
     } catch (err) {
       throw err;
