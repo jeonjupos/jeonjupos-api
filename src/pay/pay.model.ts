@@ -4,8 +4,6 @@ import { PoolConnection } from 'mysql2/promise';
 
 @Injectable()
 export class PayModel {
-  private sql: string;
-  private params: any[];
   constructor(private databaseService: DatabaseService) {}
 
   /**
@@ -14,19 +12,11 @@ export class PayModel {
    * @param orderinfopkey
    */
   async getOrderInfo(connection: PoolConnection, orderinfopkey: number) {
-    try {
-      this.sql = `
-        select orderinfopkey, spacepkey, orderprice from orderinfo where orderinfopkey=? and paysuccessyn=false;
-      `;
-      this.params = [orderinfopkey];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `select orderinfopkey, spacepkey, orderprice from orderinfo where orderinfopkey=? and paysuccessyn=false;`,
+      [orderinfopkey],
+    );
   }
 
   /**
@@ -35,17 +25,11 @@ export class PayModel {
    * @param orderinfopkey
    */
   async getPayInfos(connection: PoolConnection, orderinfopkey: number) {
-    try {
-      this.sql = `select * from payinfo where orderinfopkey=? order by payinfopkey desc`;
-      this.params = [orderinfopkey];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `select * from payinfo where orderinfopkey=? order by payinfopkey desc`,
+      [orderinfopkey],
+    );
   }
 
   /**
@@ -69,11 +53,10 @@ export class PayModel {
     paytype,
     paystatus,
   ) {
-    try {
-      this.sql = `
-        insert into payinfo (orderinfopkey, regdate, paycompleteyn, cashpayprice, cardpayprice, afterpayprice, expectedrestprice, cancelyn, paytype, paystatus) values (?, now(), true, ?, ?, ?, ?, false, ?, ?);
-      `;
-      this.params = [
+    return await this.databaseService.dbQuery(
+      connection,
+      `insert into payinfo (orderinfopkey, regdate, paycompleteyn, cashpayprice, cardpayprice, afterpayprice, expectedrestprice, cancelyn, paytype, paystatus) values (?, now(), true, ?, ?, ?, ?, false, ?, ?);`,
+      [
         orderinfopkey,
         cashpayprice,
         cardpayprice,
@@ -81,15 +64,8 @@ export class PayModel {
         expectedrestprice,
         paytype,
         paystatus,
-      ];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+      ],
+    );
   }
 
   /**
@@ -99,19 +75,11 @@ export class PayModel {
    * @param cardpayprice
    */
   async insertCardPay(connection: PoolConnection, payinfopkey, cardpayprice) {
-    try {
-      this.sql = `
-        insert into cardpay (payinfopkey, cardpayprice) values (? ,?);
-      `;
-      this.params = [payinfopkey, cardpayprice];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `insert into cardpay (payinfopkey, cardpayprice) values (? ,?);`,
+      [payinfopkey, cardpayprice],
+    );
   }
 
   /**
@@ -125,19 +93,11 @@ export class PayModel {
     payinfopkey: number,
     cashpayprice: number,
   ) {
-    try {
-      this.sql = `
-        insert into cashpay (payinfopkey, cashpayprice) values (?, ?);
-      `;
-      this.params = [payinfopkey, cashpayprice];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `insert into cashpay (payinfopkey, cashpayprice) values (?, ?);`,
+      [payinfopkey, cashpayprice],
+    );
   }
 
   /**
@@ -151,19 +111,11 @@ export class PayModel {
     payinfopkey: number,
     afterpayprice: number,
   ) {
-    try {
-      this.sql = `
-        insert into afterpay (payinfopkey, postpaidgrouppkey, afterpayprice) values (?, 2, ?);
-      `;
-      this.params = [payinfopkey, afterpayprice];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `insert into afterpay (payinfopkey, postpaidgrouppkey, afterpayprice) values (?, 2, ?);`,
+      [payinfopkey, afterpayprice],
+    );
   }
 
   /**
@@ -172,17 +124,11 @@ export class PayModel {
    * @param orderinfopkey
    */
   async modifyOrderinfo(connection: PoolConnection, orderinfopkey: number) {
-    try {
-      this.sql = `update orderinfo set spacepkey=null, paysuccessyn=true where orderinfopkey=?;`;
-      this.params = [orderinfopkey];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `update orderinfo set spacepkey=null, paysuccessyn=true where orderinfopkey=?;`,
+      [orderinfopkey],
+    );
   }
 
   /**
@@ -191,16 +137,10 @@ export class PayModel {
    * @param spacepkey
    */
   async modifySpace(connection: PoolConnection, spacepkey: number) {
-    try {
-      this.sql = `update space set eatingyn=false where spacepkey=?;`;
-      this.params = [spacepkey];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `update space set eatingyn=false where spacepkey=?;`,
+      [spacepkey],
+    );
   }
 }

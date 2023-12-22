@@ -6,8 +6,6 @@ import { GetTableDto } from "./dto/get-table.dto";
 
 @Injectable()
 export class TablesModel {
-  private sql: string;
-  private params: any[];
   constructor(private databaseService: DatabaseService) {}
 
   /**
@@ -16,23 +14,17 @@ export class TablesModel {
    * @param getTablesDto
    */
   async getTableList(connection: PoolConnection, getTablesDto: GetTablesDto) {
-    try {
-      this.sql = `
-        select space.spacepkey, space.spacenum, eatingyn, if(orderprice is null, 0, orderprice) orderprice
-        from space 
-        left join orderinfo on space.spacepkey=orderinfo.spacepkey
-        where space.storepkey=? and isactiveyn=true
-        order by spacenum asc
-      `;
-      this.params = [getTablesDto.storepkey];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `
+          select space.spacepkey, space.spacenum, eatingyn, if(orderprice is null, 0, orderprice) orderprice
+          from space 
+          left join orderinfo on space.spacepkey=orderinfo.spacepkey
+          where space.storepkey=? and isactiveyn=true
+          order by spacenum asc
+        `,
+      [getTablesDto.storepkey],
+    );
   }
 
   /**
@@ -41,29 +33,23 @@ export class TablesModel {
    * @param spacepkey
    */
   async getTablesOrderList(connection: PoolConnection, spacepkey: number) {
-    try {
-      this.sql = `
-        select 
+    return await this.databaseService.dbQuery(
+      connection,
+      `
+          select 
             ordermenu.menuname menuname,
             sum(if(cancelyn=true, -ordermenu.count, ordermenu.count)) count,
             sum(if(cancelyn=true, -ordermenu.count * ordermenu.saleprice, ordermenu.count * ordermenu.saleprice)) saleprice
-        from orderinfo
-        join ordernumticket on orderinfo.orderinfopkey=ordernumticket.orderinfopkey
-        join ordermenu on ordernumticket.ordernumticketpkey=ordermenu.ordernumticketpkey
-        where orderinfo.spacepkey=?
-        group by ordermenu.menupkey, ordermenu.menuname
-        order by ordermenu.menupkey desc
-        limit 5;
-      `;
-      this.params = [spacepkey];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+          from orderinfo
+          join ordernumticket on orderinfo.orderinfopkey=ordernumticket.orderinfopkey
+          join ordermenu on ordernumticket.ordernumticketpkey=ordermenu.ordernumticketpkey
+          where orderinfo.spacepkey=?
+          group by ordermenu.menupkey, ordermenu.menuname
+          order by ordermenu.menupkey desc
+          limit 5;
+        `,
+      [spacepkey],
+    );
   }
 
   /**
@@ -96,23 +82,17 @@ export class TablesModel {
    * @param orderinfopkey
    */
   async getPayInfo(connection: PoolConnection, orderinfopkey: number) {
-    try {
-      this.sql = `
-        select expectedrestprice 
-        from payinfo
-        where orderinfopkey=?
-        order by payinfopkey desc
-        limit 1
-      `;
-      this.params = [orderinfopkey];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+    return await this.databaseService.dbQuery(
+      connection,
+      `
+          select expectedrestprice 
+          from payinfo
+          where orderinfopkey=?
+          order by payinfopkey desc
+          limit 1
+        `,
+      [orderinfopkey],
+    );
   }
 
   /**
@@ -121,31 +101,25 @@ export class TablesModel {
    * @param orderinfopkey
    */
   async getOrderMenuList(connection: PoolConnection, orderinfopkey: number) {
-    try {
-      this.sql = `
-        select 
+    return await this.databaseService.dbQuery(
+      connection,
+      `
+          select 
             menu.menupkey menupkey,
             ordermenu.menuname menuname,
             sum(if(cancelyn=true, -ordermenu.count, ordermenu.count)) count,
             sum(if(cancelyn=true, -ordermenu.count, ordermenu.count)) cancelableqty,
             menu.saleprice,
             sum(if(cancelyn=true, -ordermenu.count * ordermenu.saleprice, ordermenu.count * ordermenu.saleprice)) orderprice
-        from orderinfo
-        join ordernumticket on orderinfo.orderinfopkey=ordernumticket.orderinfopkey
-        join ordermenu on ordernumticket.ordernumticketpkey=ordermenu.ordernumticketpkey
-        join menu on ordermenu.menupkey=menu.menupkey
-        where orderinfo.orderinfopkey=?
-        group by menu.menupkey, ordermenu.menuname
-        order by menu.menupkey desc
-      `;
-      this.params = [orderinfopkey];
-      return await this.databaseService.dbQuery(
-        connection,
-        this.sql,
-        this.params,
-      );
-    } catch (err) {
-      throw err;
-    }
+          from orderinfo
+          join ordernumticket on orderinfo.orderinfopkey=ordernumticket.orderinfopkey
+          join ordermenu on ordernumticket.ordernumticketpkey=ordermenu.ordernumticketpkey
+          join menu on ordermenu.menupkey=menu.menupkey
+          where orderinfo.orderinfopkey=?
+          group by menu.menupkey, ordermenu.menuname
+          order by menu.menupkey desc
+        `,
+      [orderinfopkey],
+    );
   }
 }
