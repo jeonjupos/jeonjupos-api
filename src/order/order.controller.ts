@@ -13,7 +13,7 @@ import { OrderService } from './services/order.service';
 import { OrderDto } from './dto/order.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetDeliveryOrderListDto } from './dto/get-delivery-order-list.dto';
-import { GetSpaceValidService } from "./services/get-space-valid.service";
+import { GetSpaceValidService } from './services/get-space-valid.service';
 
 @Controller('order')
 export class OrderController {
@@ -28,8 +28,8 @@ export class OrderController {
    * @param res
    * @param orderDto
    */
-  @UseGuards(AuthGuard('auth-jwt'))
   @Post('/')
+  @UseGuards(AuthGuard('auth-jwt'))
   async order(@Response() res: Response, @Body() orderDto: OrderDto) {
     try {
       // 테이블 유효성 체크
@@ -41,12 +41,14 @@ export class OrderController {
         return this.responseUtil.response(res, 200, getSpace.resCode, '', {});
       } else {
         const space = getSpace.space; // 테이블
+
         if (orderDto.orderinfopkey === 0) {
           // 첫 주문시 테이블 상태 유효성 체크
           if (space.eatingyn === true) {
             return this.responseUtil.response(res, 200, '0007', '', {});
           }
         }
+
         // 주문서 생성 및 수정, 번호표 생성, 주문메뉴 생성
         const orderinfopkey = await this.orderService.order(orderDto);
         return this.responseUtil.response(res, 200, '0000', '', {
